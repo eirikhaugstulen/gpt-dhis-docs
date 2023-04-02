@@ -1,4 +1,4 @@
-import {createSupabaseClient} from "@/scripts/createSupabaseClient";
+import {createSupabaseClient} from "../scripts/createSupabaseClient";
 import {SupabaseVectorStore} from "langchain/vectorstores";
 import {OpenAIEmbeddings} from "langchain/embeddings";
 

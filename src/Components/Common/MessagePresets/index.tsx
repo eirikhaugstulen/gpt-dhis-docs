@@ -1,4 +1,4 @@
-import {Pill} from "@/components/UI/Pill";
+import {Pill} from "../../UI/Pill";
 import {motion} from "framer-motion";
 
 const containerVariant = {

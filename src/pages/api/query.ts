@@ -1,8 +1,8 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type {NextApiRequest, NextApiResponse} from 'next'
-import {searchSupabaseVectors} from "@/scripts/searchSupabaseVectors";
-import {queryChatGPT} from "@/scripts/queryChatGPT";
-import {MutationVariables} from "@/hooks/useAiQuery";
+import {searchSupabaseVectors} from "../../scripts/searchSupabaseVectors";
+import {queryChatGPT} from "../../scripts/queryChatGPT";
+import {MutationVariables} from "../../hooks/useAiQuery";
 
 type Data = {
     text: string,

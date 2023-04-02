@@ -1,8 +1,7 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import axios, {AxiosResponse} from "axios";
-import {Message, MessageTypes} from "@/components/UI/Chat/ChatBubble/ChatBubble.types";
-import {generateId} from "@/utils/generateId";
-import {unknown} from "zod";
+import {Message, MessageTypes} from "../components/UI/Chat/ChatBubble/ChatBubble.types";
+import {generateId} from "../utils/generateId";
 
 export type MutationVariables = {
     query: string;

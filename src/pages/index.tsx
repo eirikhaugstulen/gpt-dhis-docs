@@ -1,15 +1,14 @@
 import Head from 'next/head'
 import {useState} from "react";
-import {MessagePresets} from "@/components/Common/MessagePresets";
-import {AnimatePresence, motion} from "framer-motion";
-import {useAiQuery} from "@/hooks/useAiQuery";
-import {TopBar} from "@/components/Common/TopBar";
-import {ChatForm} from "@/components/Common/Form";
-import {ChatMessages} from "@/components/Common/ChatMessages";
+import {MessagePresets} from "../components/Common/MessagePresets";
+import {AnimatePresence} from "framer-motion";
+import {useAiQuery} from "../hooks/useAiQuery";
+import {TopBar} from "../components/Common/TopBar";
+import {ChatForm} from "../components/Common/Form";
+import {ChatMessages} from "../components/Common/ChatMessages";
 import {useQueryClient} from "@tanstack/react-query";
-import {Message} from "@/components/UI/Chat/ChatBubble/ChatBubble.types";
-import {ArrowPathIcon, PencilIcon} from "@heroicons/react/24/outline";
-import {ResetButton} from "@/components/UI/ResetButton";
+import {Message} from "../components/UI/Chat/ChatBubble/ChatBubble.types";
+import {ResetButton} from "../components/UI/ResetButton";
 
 export default function Home() {
     const [showPresets, setShowPresets] = useState(true);

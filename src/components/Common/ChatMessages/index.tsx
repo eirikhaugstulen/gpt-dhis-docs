@@ -1,7 +1,7 @@
 import {AnimatePresence, motion} from "framer-motion";
-import {Message, MessageTypes} from "@/components/UI/Chat/ChatBubble/ChatBubble.types";
-import {ChatBubble} from "@/components/UI/Chat/ChatBubble";
-import {LoadingBubble} from "@/components/UI/Chat/LoadingBubble";
+import {Message} from "../../UI/Chat/ChatBubble/ChatBubble.types";
+import {ChatBubble} from "../../UI/Chat/ChatBubble";
+import {LoadingBubble} from "../../UI/Chat/LoadingBubble";
 
 type Props = {
     messages: Message[];

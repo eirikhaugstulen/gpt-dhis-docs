@@ -1,5 +1,5 @@
 import {NextApiRequest, NextApiResponse} from "next";
-import {importDocument} from "@/scripts/importDocument";
+import {importDocument} from "./scripts/importDocument";
 
 type Data = {}
 
