@@ -10,8 +10,6 @@ export default async function handler(
     if (req.method === 'POST') {
         const response = await importDocument();
 
-        console.log('Response', response);
-
         res.status(200).json({ data: response });
     } else {
         res.status(405).end();

@@ -19,7 +19,6 @@ export default function Home() {
         isQuerying,
         isFetched,
     } = useAiQuery();
-    console.log('isFetched', isFetched);
 
     const resetChat = () => {
         queryClient.removeQueries(['messages']);

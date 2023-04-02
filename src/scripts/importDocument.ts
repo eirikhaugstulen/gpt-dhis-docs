@@ -6,8 +6,9 @@ import {createSupabaseClient} from "../scripts/createSupabaseClient";
 
 export const importDocument = async () => {
     const supabaseClient = createSupabaseClient();
+    const fileName = 'about-sharing-of-objects';
 
-    const file = readFileSync('./src/documents/about-data-dimensions.md', {
+    const file = readFileSync(`./src/documents/${fileName}.md`, {
         encoding: 'utf-8'
     })
 

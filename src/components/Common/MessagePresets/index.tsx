@@ -39,9 +39,9 @@ export const MessagePresets = ({ setQuery }: Props) => {
                 className={'flex flex-wrap mt-2 gap-2'}
             >
                 <Pill onClick={setQuery} text={'What are data sets?'} />
-                <Pill onClick={setQuery} text={'Give me an example of a vaccination campaign'} />
-                <Pill onClick={setQuery} text={'How do I import CSV data?'} />
+                <Pill onClick={setQuery} text={'Can you give me five reasons on why we should use R with DHIS2?'} />
                 <Pill onClick={setQuery} text={'What are data element group sets?'} />
+                <Pill onClick={setQuery} text={'How do I share DHIS2 reports?'} />
                 <Pill onClick={setQuery} text={'What are indicators?'} />
             </motion.ul>
         </motion.div>
