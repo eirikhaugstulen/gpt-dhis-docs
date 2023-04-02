@@ -1,9 +1,12 @@
-import {Pill} from "@/Components/UI/Pill";
+import {Pill} from "@/components/UI/Pill";
 import {motion} from "framer-motion";
 
 const containerVariant = {
     hidden: {
         opacity: 0,
+        transition: {
+            duration: 0.2
+        }
     },
     visible: {
         opacity: 1,

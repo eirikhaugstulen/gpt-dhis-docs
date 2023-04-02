@@ -6,7 +6,8 @@ export const MessageTypes = Object.freeze({
 export interface Message {
     id: string;
     text: string;
-    timestamp?: string;
+    timestamp?: string | Date;
+    loading?: boolean;
     type: typeof MessageTypes[keyof typeof MessageTypes];
 }
 

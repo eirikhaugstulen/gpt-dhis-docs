@@ -1,7 +1,7 @@
 import {MessageTypes, Props} from "./ChatBubble.types";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import {useMemo} from "react";
+import {UserIcon} from "@heroicons/react/24/outline";
 
 export const ChatBubble = ({ message }: Props) => {
     const { text, type, timestamp } = message;
@@ -16,13 +16,17 @@ export const ChatBubble = ({ message }: Props) => {
         >
             <div className={isChatbot ? '-order-1' : 'order-1'}>
                 <div className={`flex p-0.5 justify-center items-center rounded-full drop-shadow ${isChatbot ? 'bg-white' : 'bg-slate-50 w-6 h-6'}`}>
-                    {isChatbot && (
+                    {isChatbot ? (
                         <Image
                             className={''}
                             src={'/dhis2-logo.svg'}
                             alt={'dhis2 logo'}
                             width={25}
                             height={25}
+                        />
+                    ) : (
+                        <UserIcon
+                            className={'w-4 h-4 text-sky-700'}
                         />
                     )}
                 </div>

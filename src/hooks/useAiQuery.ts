@@ -1,6 +1,14 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import axios from "axios";
-import {MessageTypes} from "@/Components/UI/Chat/ChatBubble/ChatBubble.types";
+import axios, {AxiosResponse} from "axios";
+import {Message, MessageTypes} from "@/components/UI/Chat/ChatBubble/ChatBubble.types";
+import {generateId} from "@/utils/generateId";
+import {unknown} from "zod";
+
+export type MutationVariables = {
+    query: string;
+    isFollowUp?: boolean;
+    messages?: Message[];
+}
 
 export const useAiQuery = () => {
     const queryClient = useQueryClient()
@@ -13,31 +21,48 @@ export const useAiQuery = () => {
         cacheTime: Infinity,
     })
 
-    const { mutate: queryGPT } = useMutation({
-        mutationFn: (query: string) => axios.post('/api/query', {
-            query,
-        }),
-        onMutate: (query: string) => {
-            queryClient.setQueryData(['messages'], (oldData: any) => {
-                return [
-                    ...oldData,
+    const {
+        mutate: queryGPT,
+        isLoading: isQuerying,
+        isSuccess,
+        isError,
+    } = useMutation<AxiosResponse, unknown, MutationVariables>({
+        mutationFn: ({ query, isFollowUp, messages }: any) => axios.post('/api/query', { query, isFollowUp, messages }),
+        onMutate: ({ query }) => {
+            queryClient.setQueryData(['messages'], (oldData: Message[] | undefined) => {
+                const newMessages = [
                     {
+                        id: generateId(),
                         type: MessageTypes.USER,
                         text: query,
                         timestamp: new Date(),
                     }
                 ]
+
+                if (!oldData) return newMessages;
+
+                return [
+                    ...oldData,
+                    ...newMessages,
+                ]
             })
         },
         onSuccess: (response) => {
-            queryClient.setQueryData(['messages'], (oldData: any) => {
-                return [
-                    ...oldData,
+            queryClient.setQueryData(['messages'], (oldData: Message[] | undefined): Message[] => {
+                const newMessages = [
                     {
+                        id: generateId(),
                         type: MessageTypes.CHATBOT,
-                        text: response?.data?.text,
+                        text: response?.data?.text ?? 'There was an error processing your request. Please try again.',
                         timestamp: new Date(),
                     }
+                ];
+
+                if (!oldData) return newMessages;
+
+                return [
+                    ...oldData,
+                    ...newMessages,
                 ]
             })
         }
@@ -45,6 +70,8 @@ export const useAiQuery = () => {
 
     return {
         messages,
+        isQuerying,
         queryGPT,
+        isFetched: !!(isError || isSuccess || isQuerying),
     }
 }

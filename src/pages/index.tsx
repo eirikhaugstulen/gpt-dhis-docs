@@ -1,22 +1,41 @@
 import Head from 'next/head'
-import axios from "axios";
 import {useState} from "react";
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {ChatBubbleLeftRightIcon, PaperAirplaneIcon} from "@heroicons/react/24/outline";
-import {Field, Form, Formik} from "formik";
-import {MessagePresets} from "@/Components/Common/MessagePresets";
+import {MessagePresets} from "@/components/Common/MessagePresets";
 import {AnimatePresence, motion} from "framer-motion";
-import {ChatBubble} from "@/Components/UI/Chat/ChatBubble";
 import {useAiQuery} from "@/hooks/useAiQuery";
-import {Message} from "@/Components/UI/Chat/ChatBubble/ChatBubble.types";
+import {TopBar} from "@/components/Common/TopBar";
+import {ChatForm} from "@/components/Common/Form";
+import {ChatMessages} from "@/components/Common/ChatMessages";
+import {useQueryClient} from "@tanstack/react-query";
+import {Message} from "@/components/UI/Chat/ChatBubble/ChatBubble.types";
+import {ArrowPathIcon, PencilIcon} from "@heroicons/react/24/outline";
+import {ResetButton} from "@/components/UI/ResetButton";
 
 export default function Home() {
     const [showPresets, setShowPresets] = useState(true);
-    const { messages, queryGPT } = useAiQuery();
+    const queryClient = useQueryClient();
+    const {
+        messages,
+        queryGPT,
+        isQuerying,
+        isFetched,
+    } = useAiQuery();
+    console.log('isFetched', isFetched);
+
+    const resetChat = () => {
+        queryClient.removeQueries(['messages']);
+        setShowPresets(true);
+    }
 
     const handleMessageSubmit = (query: string) => {
-        if (showPresets) setShowPresets(false);
-        queryGPT(query);
+        const messages: Message[] | undefined = queryClient.getQueryData(['messages']);
+        if (showPresets || !messages) {
+            setShowPresets(false);
+            queryGPT({ query });
+            return;
+        }
+
+        queryGPT({ query, isFollowUp: true, messages });
     }
 
     return (
@@ -27,47 +46,26 @@ export default function Home() {
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            <div className={'pt-40'}>
+            <div>
+                <TopBar />
 
-                <div className={"relative transition-all rounded-lg mx-auto shadow-2xl max-w-4xl z-10"}>
+                <div className={"relative mt-16 transition-all rounded-lg mx-auto shadow-2xl max-w-4xl z-10"}>
                     <div className="transform overflow-hidden flex flex-col gap-5 px-6 py-10 rounded bg-white ">
-                        <div className={'max-w-3xl w-full mx-auto'}>
-                            <AnimatePresence>
-                                {messages && (
-                                    <motion.div>
-                                        {messages?.map((message: Message, index: number) => (
-                                            <ChatBubble
-                                                key={index}
-                                                message={message}
-                                            />
-                                        ))}
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
+                        <div className={'flex justify-end'}>
+                            {!showPresets && (
+                                <div>
+                                    <ResetButton onClick={resetChat} />
+                                </div>
+                            )}
                         </div>
 
-                        <Formik
-                            initialValues={{ query: '' }}
-                            onSubmit={({ query }, { resetForm }) => {
-                                handleMessageSubmit(query);
-                                resetForm();
-                            }}
-                        >
-                            <Form className="relative flex gap-2 items-center px-4 mx-auto max-w-2xl w-full rounded ring-1 ring-opacity-10 ring-black">
-                                <ChatBubbleLeftRightIcon
-                                    className="pointer-events-none h-5 w-5 text-gray-400"
-                                    aria-hidden="true"
-                                />
-                                <Field
-                                    className="h-12 w-full flex-grow focus:outline-none border-0 bg-transparent focus:outline-none text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
-                                    placeholder="Ask me anything..."
-                                    name={'query'}
-                                />
-                                <PaperAirplaneIcon
-                                    className={'w-5 h-5 text-gray-400 cursor-pointer hover:text-sky-500 transition-all'}
-                                />
-                            </Form>
-                        </Formik>
+                        <div className={'max-w-3xl w-full mx-auto'}>
+                            <ChatMessages
+                                messages={messages}
+                                isQuerying={isQuerying}
+                            />
+                        </div>
+
 
                         <div className={'w-full max-w-2xl mx-auto'}>
                             <AnimatePresence>
@@ -78,6 +76,10 @@ export default function Home() {
                                 )}
                             </AnimatePresence>
                         </div>
+
+                        <ChatForm
+                            handleMessageSubmit={handleMessageSubmit}
+                        />
                     </div>
                 </div>
             </div>
