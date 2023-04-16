@@ -5,6 +5,7 @@ import {useState} from "react";
 import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
 import dynamic from "next/dynamic";
 import {Toaster} from "react-hot-toast";
+import { Analytics } from '@vercel/analytics/react';
 
 const App = ({ Component, pageProps }: AppProps) => {
     const [queryClient] = useState(() => new QueryClient())
@@ -14,6 +15,7 @@ const App = ({ Component, pageProps }: AppProps) => {
             <ReactQueryDevtools initialIsOpen={true} />
             <Component {...pageProps} />
             <Toaster gutter={20} />
+            <Analytics />
         </QueryClientProvider>
     )
 }
