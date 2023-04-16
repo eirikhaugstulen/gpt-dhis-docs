@@ -2,11 +2,11 @@ import {readFileSync} from 'fs';
 import {MarkdownTextSplitter} from "langchain/text_splitter";
 import {SupabaseVectorStore} from "langchain/vectorstores";
 import {OpenAIEmbeddings} from "langchain/embeddings";
-import {createSupabaseClient} from "../scripts/createSupabaseClient";
+import {createSupabaseClient} from "@/scripts/createSupabaseClient";
 
 export const importDocument = async () => {
     const supabaseClient = createSupabaseClient();
-    const fileName = 'about-sharing-of-objects';
+    const fileName = 'metadata';
 
     const file = readFileSync(`./src/documents/${fileName}.md`, {
         encoding: 'utf-8'

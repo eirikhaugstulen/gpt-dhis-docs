@@ -16,7 +16,7 @@ export const ResetButton = ({ onClick }: Props) => {
         >
             <div className={'flex items-center justify-center gap-2'}>
                 <ArrowPathIcon className={'h-5 w-5'} />
-                <span>Reset chat</span>
+                <span>Ask another topic</span>
             </div>
         </motion.button>
     );

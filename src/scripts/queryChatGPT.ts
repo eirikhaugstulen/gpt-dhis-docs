@@ -1,7 +1,8 @@
 import {ChatOpenAI} from "langchain/chat_models";
 import {ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate} from "langchain/prompts";
+import {createSupabaseClient} from "@/scripts/createSupabaseClient";
 
-export const queryChatGPT = async (query: string, context: string) => {
+export const queryChatGPT = async (query: string, context: string, conversationId: string) => {
     const model = new ChatOpenAI({
         openAIApiKey: process.env.OPENAI_API_KEY,
         temperature: 0.5,
@@ -25,5 +26,23 @@ export const queryChatGPT = async (query: string, context: string) => {
         query: query
     })
 
-    return await model.call(formattedMessages.toChatMessages());
+    const messages = formattedMessages.toChatMessages();
+    const { error } = await createSupabaseClient().from('queries').insert([
+        {
+            role: 'system',
+            content: messages[0].text,
+            conversationId,
+        },
+        {
+            role: 'user',
+            content: query,
+            conversationId,
+        }
+    ]);
+
+    if (error) {
+        console.log('error', error);
+    }
+
+    return await model.call(messages);
 }

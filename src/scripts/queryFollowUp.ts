@@ -1,15 +1,31 @@
-import {PromptTemplate} from "langchain";
-import {ChatOpenAI} from "langchain/chat_models";
+import {Configuration, OpenAIApi} from "openai";
+import {createSupabaseClient} from "@/scripts/createSupabaseClient";
 
-export const queryFollowUp = () => {
-    const model = new ChatOpenAI({
-        openAIApiKey: process.env.OPENAI_API_KEY,
-        temperature: 0.5,
-    });
 
-    const CONDENSE_PROMPT = PromptTemplate.fromTemplate(`Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question.
-        Chat History:
-        {chat_history}
-        Follow Up Input: {question}
-        Standalone question:`);
+export const queryFollowUp = async (query: string, conversationId: string, messages: []) => {
+    const config = new Configuration({
+        apiKey: process.env.OPENAI_API_KEY,
+    })
+    const openAIApi = new OpenAIApi(config);
+
+    await createSupabaseClient().from('queries').insert([
+        {
+            role: 'user',
+            content: query,
+            conversationId,
+        },
+    ]);
+
+    if (!messages) return { text: 'An unexpected error occurred.' }
+
+    const response = await openAIApi.createChatCompletion({
+        model: 'gpt-3.5-turbo',
+        messages: [...messages, { role: 'user', content: query }],
+        temperature: 0.3,
+    })
+    const responseText = response.data.choices[0]?.message?.content;
+
+    if (!responseText) return { text: 'An unexpected error occurred.' }
+
+    return { text: responseText }
 }

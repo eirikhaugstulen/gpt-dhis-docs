@@ -2,6 +2,9 @@ import {MessageTypes, Props} from "./ChatBubble.types";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import {UserIcon} from "@heroicons/react/24/outline";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from 'remark-gfm'
+import {mdxComponents} from "@/components/UI/mdxComponents/mdxComponents";
 
 export const ChatBubble = ({ message }: Props) => {
     const { text, type, timestamp } = message;
@@ -33,9 +36,19 @@ export const ChatBubble = ({ message }: Props) => {
             </div>
             <div className={'max-w-prose mt-3'}>
                 <div className={`${isChatbot ? 'bg-gray-100 rounded-r-lg rounded-bl-lg' : 'bg-sky-600 text-white rounded-l-lg rounded-br-lg'} p-3`}>
-                    <p className={'text-sm'}>
-                        {text}
-                    </p>
+                    <div className={'text-sm'}>
+                        {isChatbot ? (
+                            <ReactMarkdown
+                                components={mdxComponents}
+                                children={text}
+                                remarkPlugins={[remarkGfm]}
+                            />
+                        ) : (
+                            <>
+                                {text}
+                            </>
+                        )}
+                    </div>
                 </div>
                 <p className={'text-xs ml-2 text-gray-500 '}>{}</p>
             </div>

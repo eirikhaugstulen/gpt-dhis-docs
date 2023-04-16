@@ -9,19 +9,24 @@ import {ChatMessages} from "../components/Common/ChatMessages";
 import {useQueryClient} from "@tanstack/react-query";
 import {Message} from "../components/UI/Chat/ChatBubble/ChatBubble.types";
 import {ResetButton} from "../components/UI/ResetButton";
+import {generateId} from "@/utils/generateId";
+import {useCustomToast} from "@/components/UI/useCustomToast";
+import {Toaster} from "react-hot-toast";
 
 export default function Home() {
     const [showPresets, setShowPresets] = useState(true);
+    const [conversationId, setConversationId] = useState<string>(generateId());
     const queryClient = useQueryClient();
+    const toast = useCustomToast();
     const {
         messages,
         queryGPT,
         isQuerying,
-        isFetched,
     } = useAiQuery();
 
     const resetChat = () => {
         queryClient.removeQueries(['messages']);
+        setConversationId(generateId());
         setShowPresets(true);
     }
 
@@ -29,11 +34,15 @@ export default function Home() {
         const messages: Message[] | undefined = queryClient.getQueryData(['messages']);
         if (showPresets || !messages) {
             setShowPresets(false);
-            queryGPT({ query });
+            queryGPT({ query, conversationId });
             return;
         }
 
-        queryGPT({ query, isFollowUp: true, messages });
+        if (messages.length === 5) {
+            toast();
+        }
+
+        queryGPT({ query, isFollowUp: true, conversationId });
     }
 
     return (

@@ -6,7 +6,7 @@ import {generateId} from "../utils/generateId";
 export type MutationVariables = {
     query: string;
     isFollowUp?: boolean;
-    messages?: Message[];
+    conversationId: string,
 }
 
 export const useAiQuery = () => {
@@ -26,7 +26,7 @@ export const useAiQuery = () => {
         isSuccess,
         isError,
     } = useMutation<AxiosResponse, unknown, MutationVariables>({
-        mutationFn: ({ query, isFollowUp, messages }: any) => axios.post('/api/query', { query, isFollowUp, messages }),
+        mutationFn: ({ query, isFollowUp, messages, conversationId }: any) => axios.post('/api/query', { query, isFollowUp, messages, conversationId }),
         onMutate: ({ query }) => {
             queryClient.setQueryData(['messages'], (oldData: Message[] | undefined) => {
                 const newMessages = [
