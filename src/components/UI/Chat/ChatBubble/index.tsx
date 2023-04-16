@@ -40,6 +40,7 @@ export const ChatBubble = ({ message }: Props) => {
                         {isChatbot ? (
                             <ReactMarkdown
                                 components={mdxComponents}
+                                // eslint-disable-next-line react/no-children-prop
                                 children={text}
                                 remarkPlugins={[remarkGfm]}
                             />

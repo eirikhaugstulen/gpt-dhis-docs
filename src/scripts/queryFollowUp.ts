@@ -1,8 +1,9 @@
 import {Configuration, OpenAIApi} from "openai";
 import {createSupabaseClient} from "@/scripts/createSupabaseClient";
+import {ChatCompletionRequestMessage} from "openai/api";
 
 
-export const queryFollowUp = async (query: string, conversationId: string, messages: []) => {
+export const queryFollowUp = async (query: string, conversationId: string, messages: ChatCompletionRequestMessage[]) => {
     const config = new Configuration({
         apiKey: process.env.OPENAI_API_KEY,
     })
