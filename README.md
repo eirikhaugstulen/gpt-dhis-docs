@@ -1,38 +1,45 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# DHIS2-GPT-DOCS
 
-## Getting Started
+DHIS2-GPT-DOCS is an application that provides users with an intuitive conversational interface with knowledge of the DHIS2 documentation. It is built on top of advanced natural language processing techniques that enable users to ask questions and receive relevant information from the DHIS2 documentation without the need for extensive technical knowledge.
 
-First, run the development server:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+## ⚠️ Experimental
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This repository is only a side-project of mine to play around with the possibilities of combining DHIS2 with LLM's and ChatGPT.
+<br />
+It is not built by or related to the DHIS2 core team.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## 🌧️ Limitations
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+💾 The application has no memory. This means that follow up questions without any context is not going to be answered correctly.
+<br />
+<br />
+📑 Only small parts of the documentation has been vectorized as part of this MVP. Check `./src/documents` to see which data has been imported.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+## How it's Built
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+This application uses the following techniques to provide users with meaningful answers:
 
-## Learn More
+1. DHIS2-GPT-DOCS leverages vectorization techniques to break down the DHIS2 documentation into smaller parts that can be easily indexed and searched.
+2. The vectorized documentation is stored in a Supabase backend for ease of use.
+3. The application uses Top-K Cosine similarity search to match user queries with relevant parts of the DHIS2 documentation.
+4. The user query and the related context is then wrapped in a pre-formatted prompt and sent to ChatGPT to answer in a user-centric way.
 
-To learn more about Next.js, take a look at the following resources:
+## Installation
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Installing DHIS2-GPT-DOCS is easy. Follow the steps below to get started:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+1. Clone this repository to your local machine.
+2. Install the required dependencies using `yarn install`
+3. Add the required `.env` variables for the app to run. (OpenAI and Supabase)
+4. Run the application using `yarn dev`
 
-## Deploy on Vercel
+## Usage
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Using DHIS2-GPT-DOCS is simple. Type your question into the chat interface, and the application will retrieve the relevant information from the DHIS2 documentation and provide it to you in a conversational format.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Contribution
+If you would like to contribute, please feel free to submit a pull request.
+
+
+
