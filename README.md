@@ -11,9 +11,6 @@ It is not built by or related to the DHIS2 core team.
 
 ## 🌧️ Limitations
 
-💾 The application has no memory. This means that follow up questions without any context is not going to be answered correctly.
-<br />
-<br />
 📑 Only small parts of the documentation has been vectorized as part of this MVP. Check `./src/documents` to see which data has been imported.
 
 ## How it's Built
