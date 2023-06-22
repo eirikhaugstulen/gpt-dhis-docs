@@ -1,16 +1,20 @@
 import Image from "next/image";
-import dynamic from 'next/dynamic'
 import {QuestionMarkCircleIcon} from "@heroicons/react/24/outline";
 import {useState} from "react";
 import {HelpModal} from "@/components/Common/HelpModal";
 
+type Props = {
+    title?: string,
+}
 
-export const TopBar = () => {
+export const TopBar = ({
+    title = 'DHIS2 Chatbot',
+}: Props) => {
     const [helpModalOpen, setHelpModalOpen] = useState(false)
 
     return (
         <>
-            <div className={'w-full flex items-center justify-between align-center px-10 py-4 w-full border-b'}>
+            <div className={'w-full sticky top-0 z-50 bg-white flex items-center justify-between align-center px-10 py-4 border-b'}>
                 <div className={'flex items-center'}>
                     <Image
                         src={'/dhis2-logo.svg'}
@@ -19,7 +23,7 @@ export const TopBar = () => {
                         height={35}
                     />
 
-                    <h1 className={'text-xl font-bold ml-2'}>DHIS2 Chatbot</h1>
+                    <h1 className={'text-xl font-bold ml-2'}>{title}</h1>
                 </div>
 
                 <button

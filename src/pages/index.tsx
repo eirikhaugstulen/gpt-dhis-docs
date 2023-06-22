@@ -1,48 +1,41 @@
 import Head from 'next/head'
-import {useState} from "react";
-import {MessagePresets} from "../components/Common/MessagePresets";
+import {useRef, useState} from "react";
+import {MessagePresets} from "@/components/Common/MessagePresets";
 import {AnimatePresence} from "framer-motion";
-import {useAiQuery} from "../hooks/useAiQuery";
-import {TopBar} from "../components/Common/TopBar";
-import {ChatForm} from "../components/Common/Form";
-import {ChatMessages} from "../components/Common/ChatMessages";
-import {useQueryClient} from "@tanstack/react-query";
-import {Message} from "../components/UI/Chat/ChatBubble/ChatBubble.types";
-import {ResetButton} from "../components/UI/ResetButton";
-import {generateId} from "@/utils/generateId";
-import {useCustomToast} from "@/components/UI/useCustomToast";
-import {Toaster} from "react-hot-toast";
+import {TopBar} from "@/components/Common/TopBar";
+import {ChatForm} from "@/components/Common/Form";
+import {ChatMessages} from "@/components/Common/ChatMessages";
+import {ResetButton} from "@/components/UI/ResetButton";
+import {useChat} from "ai/react";
+import {MessageTypes} from "@/components/UI/Chat/ChatBubble/ChatBubble.types";
 
 export default function Home() {
     const [showPresets, setShowPresets] = useState(true);
-    const [conversationId, setConversationId] = useState<string>(generateId());
-    const queryClient = useQueryClient();
-    const toast = useCustomToast();
+    const submitRef = useRef<HTMLButtonElement | undefined>(undefined);
     const {
         messages,
-        queryGPT,
-        isQuerying,
-    } = useAiQuery();
+        handleSubmit,
+        handleInputChange,
+        input,
+        setInput,
+        setMessages,
+        isLoading,
+    } = useChat({
+        api: '/api/query'
+    })
 
-    const resetChat = () => {
-        queryClient.removeQueries(['messages']);
-        setConversationId(generateId());
-        setShowPresets(true);
+    const choosePreset = async (query: string) => {
+        if (submitRef.current) {
+            setShowPresets(false)
+            await setInput(query);
+            submitRef.current.click();
+        }
     }
 
-    const handleMessageSubmit = (query: string) => {
-        const messages: Message[] | undefined = queryClient.getQueryData(['messages']);
-        if (showPresets || !messages) {
-            setShowPresets(false);
-            queryGPT({ query, conversationId });
-            return;
-        }
-
-        if (messages.length === 5) {
-            toast();
-        }
-
-        queryGPT({ query, isFollowUp: true, conversationId });
+    const resetChat = () => {
+        setShowPresets(true)
+        setInput('')
+        setMessages([])
     }
 
     return (
@@ -56,7 +49,7 @@ export default function Home() {
             <div>
                 <TopBar />
 
-                <div className={"relative mt-16 transition-all rounded-lg mx-auto shadow-2xl max-w-4xl z-10"}>
+                <div className={"relative mt-16 transition-all rounded-lg mx-auto mb-28 shadow-2xl max-w-4xl z-10"}>
                     <div className="transform overflow-hidden flex flex-col gap-5 px-6 py-10 rounded bg-white ">
                         <div className={'flex justify-end'}>
                             {!showPresets && (
@@ -69,7 +62,7 @@ export default function Home() {
                         <div className={'max-w-3xl w-full mx-auto'}>
                             <ChatMessages
                                 messages={messages}
-                                isQuerying={isQuerying}
+                                isQuerying={!(messages[messages.length - 1]?.role === MessageTypes.CHATBOT) && isLoading}
                             />
                         </div>
 
@@ -78,14 +71,17 @@ export default function Home() {
                             <AnimatePresence>
                                 {showPresets && (
                                     <MessagePresets
-                                        setQuery={handleMessageSubmit}
+                                        setQuery={choosePreset}
                                     />
                                 )}
                             </AnimatePresence>
                         </div>
 
                         <ChatForm
-                            handleMessageSubmit={handleMessageSubmit}
+                            handleMessageSubmit={handleSubmit}
+                            onFieldChange={handleInputChange}
+                            value={input}
+                            submitRef={submitRef}
                         />
                     </div>
                 </div>

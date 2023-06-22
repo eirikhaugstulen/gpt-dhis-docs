@@ -1,15 +1,9 @@
-export const MessageTypes = Object.freeze({
-    CHATBOT: 'CHATBOT',
-    USER: 'USER',
-});
+import {Message} from "ai/react";
 
-export interface Message {
-    id: string;
-    text: string;
-    timestamp?: string | Date;
-    loading?: boolean;
-    type: typeof MessageTypes[keyof typeof MessageTypes];
-}
+export const MessageTypes = Object.freeze({
+    CHATBOT: 'assistant',
+    USER: 'user',
+});
 
 export interface Props {
     message: Message;
