@@ -28,8 +28,7 @@ export const searchSupabaseVectors = async (query: string) => {
         console.log('error', error);
     }
 
-    console.log('Result fetched: ', results)
-    return results.reduce((acc: any, result) => {
-        return acc + ' ' + result.content;
+    return results.reduce((acc: any, { content }: { content: string }) => {
+        return acc + ' ' + content;
     }, '');
 }
