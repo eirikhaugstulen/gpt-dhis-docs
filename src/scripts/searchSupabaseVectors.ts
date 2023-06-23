@@ -1,21 +1,34 @@
 import {createSupabaseClient} from "../scripts/createSupabaseClient";
-import {SupabaseVectorStore} from "langchain/vectorstores";
-import {OpenAIEmbeddings} from "langchain/embeddings";
+import { Configuration, OpenAIApi } from 'openai-edge'
+
 
 export const searchSupabaseVectors = async (query: string) => {
     const supabaseClient = createSupabaseClient();
-    const vectorStore = await SupabaseVectorStore.fromExistingIndex(
-        new OpenAIEmbeddings(),
-        {
-            client: supabaseClient,
-            tableName: 'documents',
-            queryName: 'match_documents'
-        }
-    )
+    const configuration = new Configuration({
+        apiKey: process.env.OPENAI_API_KEY,
+    })
+    const openAIApi = new OpenAIApi(configuration);
 
-    const result = await vectorStore.similaritySearch(query, 10);
+    const response = await openAIApi.createEmbedding({
+        input: query,
+        model: 'text-embedding-ada-002',
+    })
+    const data = await response.json();
+    const [{ embedding }] = data.data;
+    console.log('data', embedding);
 
-    console.log('Result', result[0].pageContent);
+    const { data: results, error } = await supabaseClient.rpc('match_page_sections', {
+        embedding,
+        match_threshold: 0.81,
+        match_count: 10,
+        min_content_length: 50,
+    });
 
-    return result[0].pageContent;
+    if (error) {
+        console.log('error', error);
+    }
+
+    return results.reduce((acc: any, { content }: { content: string }) => {
+        return acc + ' ' + content;
+    }, '');
 }

@@ -1,49 +1,56 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type {NextApiRequest, NextApiResponse} from 'next'
-import {searchSupabaseVectors} from "../../scripts/searchSupabaseVectors";
-import {queryChatGPT} from "../../scripts/queryChatGPT";
-import {MutationVariables} from "../../hooks/useAiQuery";
-import {createSupabaseClient} from "@/scripts/createSupabaseClient";
-import {queryFollowUp} from "@/scripts/queryFollowUp";
+import type {NextApiResponse} from 'next'
+import {Message} from "ai/react";
+import {Configuration, OpenAIApi} from "openai-edge";
+import {OpenAIStream, StreamingTextResponse} from "ai";
+import {NextRequest} from "next/server";
+import {rewriteStandaloneQuestion} from "@/scripts/rewriteStandaloneQuestion";
+import {searchSupabaseVectors} from "@/scripts/searchSupabaseVectors";
+import {buildSystemTemplate} from "@/scripts/buildSystemTemplate";
 
 type Data = {
-    text: string,
+    messages: Message[],
 }
 
+export const config = {
+    runtime: 'edge',
+}
+
+const apiConfig = new Configuration({
+    apiKey: process.env.OPENAI_API_KEY!,
+})
+
+const openai = new OpenAIApi(apiConfig)
+
 export default async function handler(
-    req: NextApiRequest,
+    req: NextRequest,
     res: NextApiResponse<Data>
 ) {
     if (req.method === 'POST') {
-        const supabaseClient = createSupabaseClient();
-        const { query, conversationId }: MutationVariables = req.body;
+        const { messages } = await req.json();
+        const query = messages[messages.length - 1]?.content;
 
-        const { data: messages } = await supabaseClient
-            .from('queries')
-            .select('role,content')
-            .eq('conversationId', conversationId)
-            .order('id', { ascending: true })
-            .limit(10);
-
-        let response;
-        if (!messages?.length) {
-            const context = await searchSupabaseVectors(query);
-            response = await queryChatGPT(query, context, conversationId);
-        } else {
-            response = await queryFollowUp(query, conversationId, messages);
+        if (!query) {
+            res.status(400).end();
+            return;
         }
 
-        await supabaseClient
-            .from('queries')
-            .insert([
-                {
-                    role: 'assistant',
-                    content: response.text,
-                    conversationId,
-                }
-            ]);
+        const standaloneQuestion = await rewriteStandaloneQuestion(messages);
 
-        res.status(200).json({ text: response.text });
+        const context = await searchSupabaseVectors(query);
+
+        const systemTemplate = buildSystemTemplate(context);
+
+        const response = await openai.createChatCompletion({
+            model: 'gpt-3.5-turbo-16k',
+            temperature: 0,
+            messages: [{ role: 'system', content: systemTemplate }, { role: 'user', content: standaloneQuestion }],
+            stream: true,
+        })
+
+        const stream = OpenAIStream(response);
+
+        return new StreamingTextResponse(stream)
     } else {
         res.status(405).end();
     }

@@ -7,8 +7,8 @@ import remarkGfm from 'remark-gfm'
 import {mdxComponents} from "@/components/UI/mdxComponents/mdxComponents";
 
 export const ChatBubble = ({ message }: Props) => {
-    const { text, type, timestamp } = message;
-    const isChatbot = type === MessageTypes.CHATBOT;
+    const { content, role } = message;
+    const isChatbot = role === MessageTypes.CHATBOT;
 
     return (
         <motion.div
@@ -41,12 +41,12 @@ export const ChatBubble = ({ message }: Props) => {
                             <ReactMarkdown
                                 components={mdxComponents}
                                 // eslint-disable-next-line react/no-children-prop
-                                children={text}
+                                children={content}
                                 remarkPlugins={[remarkGfm]}
                             />
                         ) : (
                             <>
-                                {text}
+                                {content}
                             </>
                         )}
                     </div>
