@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/personal-notebook.iml" filepath="$PROJECT_DIR$/.idea/personal-notebook.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/gpt-dhis-docs.iml" filepath="$PROJECT_DIR$/.idea/gpt-dhis-docs.iml" />
     </modules>
   </component>
 </project>
