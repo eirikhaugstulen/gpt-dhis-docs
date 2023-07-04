@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import {useRef, useState} from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 import {MessagePresets} from "@/components/Common/MessagePresets";
 import {AnimatePresence} from "framer-motion";
 import {TopBar} from "@/components/Common/TopBar";
@@ -8,65 +8,7 @@ import {ChatMessages} from "@/components/Common/ChatMessages";
 import {ResetButton} from "@/components/UI/ResetButton";
 import {useChat} from "ai/react";
 import {MessageTypes} from "@/components/UI/Chat/ChatBubble/ChatBubble.types";
-import {ChatRequest, FunctionCallHandler, nanoid} from "ai";
-import {OpenAiFunctionNames} from "@/scripts/createFunctionDefinitions";
-import {createSupabaseClient} from "@/scripts/createSupabaseClient";
-
-const functionCallHandler: FunctionCallHandler = async (
-    chatMessages,
-    functionCall
-) => {
-    if (functionCall.name === OpenAiFunctionNames.ASK_TO_SAVE_UNANSWERED_QUESTION) {
-        const functionResponse: ChatRequest = {
-            messages: [
-                ...chatMessages,
-                {
-                    id: nanoid(),
-                    name: OpenAiFunctionNames.ASK_TO_SAVE_UNANSWERED_QUESTION,
-                    role: 'function' as const,
-                    content: JSON.stringify({
-                        info: 'Explain that you are sorry that you dont know and ask the user if the question could be saved to further improve our documentation.'
-                    })
-                }
-            ]
-        }
-        return functionResponse
-    }
-    if (functionCall.name === OpenAiFunctionNames.SAVE_UNANSWERED_QUESTION) {
-        try {
-            if (!functionCall.arguments) throw new Error('No function call arguments');
-            const parsedFunctionCallArguments = JSON.parse(functionCall.arguments)
-
-            const { query } = parsedFunctionCallArguments;
-
-            if (!query) throw new Error('No query in function call arguments');
-
-            const { error } = await createSupabaseClient()
-                .from('unanswered_questions')
-                .insert({ query })
-
-            if (error) throw new Error(error.message)
-        } catch (e) {
-            console.error('There has been an error saving the user query', e)
-        }
-
-
-        const functionResponse: ChatRequest = {
-            messages: [
-                ...chatMessages,
-                {
-                    id: nanoid(),
-                    name: OpenAiFunctionNames.SAVE_UNANSWERED_QUESTION,
-                    role: 'function' as const,
-                    content: JSON.stringify({
-                        info: 'Explain that the question could not be answered and that an anonymous question stored to further improve the DHIS2 documentation. Thank the user for their contribution and patience.'
-                    })
-                }
-            ]
-        }
-        return functionResponse
-    }
-}
+import {ChatFunctionHandler} from "@/components/OpenAIFunctions/ChatFunctionHandler";
 
 export default function Home() {
     const [showPresets, setShowPresets] = useState(true);
@@ -81,12 +23,11 @@ export default function Home() {
         isLoading,
     } = useChat({
         api: '/api/query',
-        experimental_onFunctionCall: functionCallHandler,
+        experimental_onFunctionCall: ChatFunctionHandler,
     })
 
     const choosePreset = async (query: string) => {
         if (submitRef.current) {
-            setShowPresets(false)
             await setInput(query);
             submitRef.current.click();
         }
@@ -97,6 +38,18 @@ export default function Home() {
         setInput('')
         setMessages([])
     }
+
+    useEffect(() => {
+        if (messages.length > 0) {
+            setShowPresets(false)
+        }
+    }, [messages.length]);
+
+    const isQuerying = useMemo(() => {
+        const lastMessage = messages[messages.length - 1]
+        if (!lastMessage || !isLoading) return false
+        return lastMessage.role !== MessageTypes.CHATBOT || !!lastMessage.function_call
+    }, [isLoading, messages])
 
     return (
         <>
@@ -126,7 +79,7 @@ export default function Home() {
                         <div className={'max-w-3xl w-full mx-auto'}>
                             <ChatMessages
                                 messages={messages}
-                                isQuerying={!(messages[messages.length - 1]?.role === MessageTypes.CHATBOT) && isLoading}
+                                isQuerying={isQuerying}
                             />
                         </div>
 

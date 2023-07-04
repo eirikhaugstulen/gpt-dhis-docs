@@ -8,7 +8,7 @@ export const OpenAiFunctionNames = Object.freeze({
 export const functions: ChatCompletionFunctions[] = [
     {
         name: OpenAiFunctionNames.ASK_TO_SAVE_UNANSWERED_QUESTION,
-        description: 'Run this function if you do not know the answer to the user query',
+        description: 'Ask the user to save the query for further improvements',
         parameters: {
             type: 'object',
             properties: {
