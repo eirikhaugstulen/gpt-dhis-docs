@@ -1,9 +1,9 @@
 import {ChatBubbleLeftRightIcon, PaperAirplaneIcon} from "@heroicons/react/24/outline";
-import {FormEvent} from "react";
+import {ChangeEvent, FormEvent} from "react";
 
 type Props = {
     handleMessageSubmit: ((event: FormEvent<HTMLFormElement>) => void);
-    onFieldChange: ((event: FormEvent<HTMLInputElement>) => void);
+    onFieldChange: ((event: ChangeEvent<HTMLInputElement>) => void);
     value: string;
     submitRef: any;
 }

@@ -10,6 +10,10 @@ export const ChatBubble = ({ message }: Props) => {
     const { content, role } = message;
     const isChatbot = role === MessageTypes.CHATBOT;
 
+    if (role === MessageTypes.FUNCTION || !!message.function_call) {
+        return null;
+    }
+
     return (
         <motion.div
             className={`flex gap-2 w-full ${isChatbot ? 'justify-start' : 'justify-end'}`}
