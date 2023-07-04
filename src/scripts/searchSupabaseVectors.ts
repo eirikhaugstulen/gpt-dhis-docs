@@ -1,8 +1,11 @@
-import {createSupabaseClient} from "../scripts/createSupabaseClient";
+import {createSupabaseClient} from "@/scripts/createSupabaseClient";
 import { Configuration, OpenAIApi } from 'openai-edge'
 
 
-export const searchSupabaseVectors = async (query: string) => {
+export const searchSupabaseVectors = async (query: string | undefined) => {
+    if (!query) {
+        return query;
+    }
     const supabaseClient = createSupabaseClient();
     const configuration = new Configuration({
         apiKey: process.env.OPENAI_API_KEY,
@@ -15,7 +18,6 @@ export const searchSupabaseVectors = async (query: string) => {
     })
     const data = await response.json();
     const [{ embedding }] = data.data;
-    console.log('data', embedding);
 
     const { data: results, error } = await supabaseClient.rpc('match_page_sections', {
         embedding,

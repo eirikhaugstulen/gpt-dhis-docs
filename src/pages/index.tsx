@@ -8,6 +8,65 @@ import {ChatMessages} from "@/components/Common/ChatMessages";
 import {ResetButton} from "@/components/UI/ResetButton";
 import {useChat} from "ai/react";
 import {MessageTypes} from "@/components/UI/Chat/ChatBubble/ChatBubble.types";
+import {ChatRequest, FunctionCallHandler, nanoid} from "ai";
+import {OpenAiFunctionNames} from "@/scripts/createFunctionDefinitions";
+import {createSupabaseClient} from "@/scripts/createSupabaseClient";
+
+const functionCallHandler: FunctionCallHandler = async (
+    chatMessages,
+    functionCall
+) => {
+    if (functionCall.name === OpenAiFunctionNames.ASK_TO_SAVE_UNANSWERED_QUESTION) {
+        const functionResponse: ChatRequest = {
+            messages: [
+                ...chatMessages,
+                {
+                    id: nanoid(),
+                    name: OpenAiFunctionNames.ASK_TO_SAVE_UNANSWERED_QUESTION,
+                    role: 'function' as const,
+                    content: JSON.stringify({
+                        info: 'Explain that you are sorry that you dont know and ask the user if the question could be saved to further improve our documentation.'
+                    })
+                }
+            ]
+        }
+        return functionResponse
+    }
+    if (functionCall.name === OpenAiFunctionNames.SAVE_UNANSWERED_QUESTION) {
+        try {
+            if (!functionCall.arguments) throw new Error('No function call arguments');
+            const parsedFunctionCallArguments = JSON.parse(functionCall.arguments)
+
+            const { query } = parsedFunctionCallArguments;
+
+            if (!query) throw new Error('No query in function call arguments');
+
+            const { error } = await createSupabaseClient()
+                .from('unanswered_questions')
+                .insert({ query })
+
+            if (error) throw new Error(error.message)
+        } catch (e) {
+            console.error('There has been an error saving the user query', e)
+        }
+
+
+        const functionResponse: ChatRequest = {
+            messages: [
+                ...chatMessages,
+                {
+                    id: nanoid(),
+                    name: OpenAiFunctionNames.SAVE_UNANSWERED_QUESTION,
+                    role: 'function' as const,
+                    content: JSON.stringify({
+                        info: 'Explain that the question could not be answered and that an anonymous question stored to further improve the DHIS2 documentation. Thank the user for their contribution and patience.'
+                    })
+                }
+            ]
+        }
+        return functionResponse
+    }
+}
 
 export default function Home() {
     const [showPresets, setShowPresets] = useState(true);
@@ -21,7 +80,8 @@ export default function Home() {
         setMessages,
         isLoading,
     } = useChat({
-        api: '/api/query'
+        api: '/api/query',
+        experimental_onFunctionCall: functionCallHandler,
     })
 
     const choosePreset = async (query: string) => {
