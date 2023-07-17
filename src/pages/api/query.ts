@@ -6,7 +6,6 @@ import {NextRequest} from "next/server";
 import {rewriteStandaloneQuestion} from "@/scripts/rewriteStandaloneQuestion";
 import {searchSupabaseVectors} from "@/scripts/searchSupabaseVectors";
 import {buildSystemTemplate} from "@/scripts/buildSystemTemplate";
-import { functions } from '@/scripts/createFunctionDefinitions';
 
 type Data = {
     messages: ChatCompletionRequestMessage[],
@@ -52,9 +51,9 @@ export default async function handler(
         const response = await openai.createChatCompletion({
             model: 'gpt-3.5-turbo-16k',
             temperature: 0,
-            function_call: 'auto',
             messages: updatedMessages,
-            functions,
+            // function_call: 'auto',
+            // functions,
             stream: true,
         })
 

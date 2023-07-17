@@ -8,7 +8,6 @@ import {ChatMessages} from "@/components/Common/ChatMessages";
 import {ResetButton} from "@/components/UI/ResetButton";
 import {useChat} from "ai/react";
 import {MessageTypes} from "@/components/UI/Chat/ChatBubble/ChatBubble.types";
-import {ChatFunctionHandler} from "@/components/OpenAIFunctions/ChatFunctionHandler";
 
 export default function Home() {
     const [showPresets, setShowPresets] = useState(true);
@@ -23,7 +22,7 @@ export default function Home() {
         isLoading,
     } = useChat({
         api: '/api/query',
-        experimental_onFunctionCall: ChatFunctionHandler,
+        // experimental_onFunctionCall: ChatFunctionHandler,
     })
 
     const choosePreset = async (query: string) => {
