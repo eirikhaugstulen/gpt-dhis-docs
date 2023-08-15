@@ -6,6 +6,7 @@ export const mdxComponents: Components = {
     h3: ({children}) => <h3 className={'text-lg font-semibold mt-6 mb-4'}>{children}</h3>,
     ul: ({children}) => <ul className={'my-4 list-disc px-4'}>{children}</ul>,
     ol: ({children}) => <ol className={'my-4 list-decimal px-4'}>{children}</ol>,
+    a: ({ children, href }) => <a href={href} className={'text-sky-600 hover:underline'}>{children}</a>,
     li: ({children}) => <li className={'my-2 list-item'}>{children}</li>,
     p: ({children}) => <p className={'text-sm'}>{children}</p>,
     text: ({children}) => <span className={'text-sm'}>{children}</span>,
