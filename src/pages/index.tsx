@@ -22,7 +22,6 @@ export default function Home() {
         isLoading,
     } = useChat({
         api: '/api/query',
-        // experimental_onFunctionCall: ChatFunctionHandler,
     })
 
     const choosePreset = async (query: string) => {
