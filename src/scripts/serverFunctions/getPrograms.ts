@@ -22,7 +22,7 @@ export const getPrograms = async (functionArgs: unknown) => {
         });
 
     return {
-        followUpInstructions: 'Format the list of programs as a bullet list of program names with the ID in parentheses. For example:\n- Test Program 1 (testid1)\n- Test Program 2 (testid2)',
+        followUpInstructions: 'If the user asked for all programs, format the list of programs as a bullet list of program names with the ID in parentheses. For example:\n- Test Program 1 (testid1)\n- Test Program 2 (testid2). \n If you need a specific id, get it from the program list and then use the getProgramById function.',
         programType,
         programs,
     }

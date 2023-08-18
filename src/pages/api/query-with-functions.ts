@@ -61,6 +61,8 @@ export default async function handler(
                     temperature: 0,
                     // @ts-ignore
                     messages: [...updatedMessages, ...functionCallResult],
+                    function_call: 'auto',
+                    functions,
                     stream: true,
                 })
             }
