@@ -59,6 +59,7 @@ export default async function handler(
                 return openai.createChatCompletion({
                     model: 'gpt-4',
                     temperature: 0,
+                    // @ts-ignore
                     messages: [...updatedMessages, ...functionCallResult],
                     stream: true,
                 })
