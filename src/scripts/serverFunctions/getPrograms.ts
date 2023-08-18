@@ -12,7 +12,7 @@ export const getPrograms = async (functionArgs: unknown) => {
 
     const headers = { Authorization: `Basic YWRtaW46ZGlzdHJpY3Q=`};
     // @ts-ignore
-    const { programs } = await fetch(`http://localhost:8080/api/programs?filter=programType:eq:${ProgramTypes[programType]}`, {
+    const { programs } = await fetch(`https://debug.dhis2.org/2.40dev/api/40/programs?filter=programType:eq:${ProgramTypes[programType]}`, {
         headers,
     })
         .then(res => res.json())

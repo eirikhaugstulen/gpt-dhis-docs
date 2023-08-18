@@ -6,7 +6,7 @@ export const getProgramById = async (functionArgs: unknown) => {
     console.log('Getting info for programId: ', programId);
 
     const headers = { Authorization: `Basic YWRtaW46ZGlzdHJpY3Q=`};
-    const { programs } = await fetch(`http://localhost:8080/api/programs/${programId}`, {
+    const { programs } = await fetch(`https://debug.dhis2.org/2.40dev/api/40/programs/${programId}`, {
         headers,
     })
         .then(res => res.json())
