@@ -49,7 +49,7 @@ export default async function handler(
         }
 
         const response = await openai.createChatCompletion({
-            model: 'gpt-3.5-turbo-16k',
+            model: 'gpt-4',
             temperature: 0,
             messages: updatedMessages,
             // function_call: 'auto',

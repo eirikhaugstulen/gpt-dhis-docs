@@ -7,9 +7,14 @@ import {MessageTypes} from "@/components/UI/Chat/ChatBubble/ChatBubble.types";
 type Props = {
     messages: Message[];
     isQuerying: boolean;
+    defaultText?: string;
 }
 
-export const ChatMessages = ({ messages, isQuerying }: Props) => {
+export const ChatMessages = ({
+                                 messages,
+                                 isQuerying,
+                                 defaultText = 'Hello! I am your DHIS2 assistant - ask me anything DHIS2 related 👋',
+                             }: Props) => {
 
     return (
         <AnimatePresence>
@@ -19,7 +24,7 @@ export const ChatMessages = ({ messages, isQuerying }: Props) => {
                         message={{
                             id: 'initial-message',
                             role: MessageTypes.CHATBOT,
-                            content: 'Hello! I am your DHIS2 assistant - ask me anything DHIS2 related 👋'
+                            content: defaultText
                         }}
                     />
 

@@ -1,22 +1,38 @@
 import { ChatCompletionFunctions } from "openai-edge";
 
 export const OpenAiFunctionNames = Object.freeze({
-    ASK_TO_SAVE_UNANSWERED_QUESTION: 'ask_to_save_unanswered_question',
     SAVE_UNANSWERED_QUESTION: 'save_unanswered_question',
+    GET_PROGRAMS: 'get_programs',
+    GET_PROGRAM_DETAILS_BY_ID: 'get_program_details_by_id',
 })
 
 export const functions: ChatCompletionFunctions[] = [
     {
-        name: OpenAiFunctionNames.ASK_TO_SAVE_UNANSWERED_QUESTION,
-        description: 'Ask the user to save the query for further improvements',
+        name: OpenAiFunctionNames.GET_PROGRAMS,
+        description: 'Run this function to get a list of all programs in the DHIS2 instance',
         parameters: {
             type: 'object',
             properties: {
-                query: {
+                programType: {
                     type: 'string',
-                    description: 'The question asked by the user',
+                    description: 'The type of program to get. Should be one of: [TRACKER, EVENT, AGGREGATE]. Always default to EVENT',
                 }
-            }
+            },
+            required: ['programType'],
+        },
+    },
+    {
+        name: OpenAiFunctionNames.GET_PROGRAM_DETAILS_BY_ID,
+        description: 'Run this function to get details about a specific program. The program ID can be found in the list of programs returned by the GET_PROGRAMS function',
+        parameters: {
+            type: 'object',
+            properties: {
+                programId: {
+                    type: 'string',
+                    description: 'The ID of the program to get details about',
+                }
+            },
+            required: ['programId'],
         }
     },
     {
