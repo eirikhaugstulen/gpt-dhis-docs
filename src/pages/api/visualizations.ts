@@ -6,7 +6,7 @@ export default async function handler(
     res: NextApiResponse
 ) {
     if (req.method === 'GET') {
-        const response = await axios.get('http://localhost:8080/api/39/visualizations', {
+        const response = await axios.get('https://debug.dhis2.org/2.40dev/api/39/visualizations', {
             headers: {
                 'Content-Type': 'application/json',
             },
