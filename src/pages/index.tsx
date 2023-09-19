@@ -8,9 +8,11 @@ import {ChatMessages} from "@/components/Common/ChatMessages";
 import {ResetButton} from "@/components/UI/ResetButton";
 import {useChat} from "ai/react";
 import {MessageTypes} from "@/components/UI/Chat/ChatBubble/ChatBubble.types";
+import {generateId} from "@/utils/generateId";
 
 export default function Home() {
     const [showPresets, setShowPresets] = useState(true);
+    const conversationIdRef = useRef<string>(generateId());
     const submitRef = useRef<HTMLButtonElement | undefined>(undefined);
     const {
         messages,
@@ -22,7 +24,9 @@ export default function Home() {
         isLoading,
     } = useChat({
         api: '/api/query',
-        // experimental_onFunctionCall: ChatFunctionHandler,
+        body: {
+            conversationId: conversationIdRef.current,
+        }
     })
 
     const choosePreset = async (query: string) => {
