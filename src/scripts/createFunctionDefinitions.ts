@@ -1,36 +1,23 @@
 import { ChatCompletionFunctions } from "openai-edge";
 
 export const OpenAiFunctionNames = Object.freeze({
-    ASK_TO_SAVE_UNANSWERED_QUESTION: 'ask_to_save_unanswered_question',
+    GET_QUERY_SOURCES: 'get_query_sources',
     SAVE_UNANSWERED_QUESTION: 'save_unanswered_question',
 })
 
 export const functions: ChatCompletionFunctions[] = [
     {
-        name: OpenAiFunctionNames.ASK_TO_SAVE_UNANSWERED_QUESTION,
-        description: 'Ask the user to save the query for further improvements',
+        name: OpenAiFunctionNames.GET_QUERY_SOURCES,
+        description: 'Run this function to get the sources for a query',
         parameters: {
             type: 'object',
             properties: {
                 query: {
                     type: 'string',
-                    description: 'The question asked by the user',
-                }
-            }
-        }
-    },
-    {
-        name: OpenAiFunctionNames.SAVE_UNANSWERED_QUESTION,
-        description: 'Run this function if the user has consented to save the user query for further improvements',
-        parameters: {
-            type: 'object',
-            properties: {
-                query: {
-                    type: 'string',
-                    description: 'The question asked by the user',
+                    description: 'The question asked by the user rewritten as a standalone query',
                 }
             },
             required: ['query']
-        },
+        }
     }
 ]

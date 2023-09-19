@@ -1,14 +1,16 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type {NextApiResponse} from 'next'
-import {ChatCompletionRequestMessage, Configuration, OpenAIApi} from "openai-edge";
+import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum, Configuration, OpenAIApi} from "openai-edge";
 import {OpenAIStream, StreamingTextResponse} from "ai";
 import {NextRequest} from "next/server";
-import {rewriteStandaloneQuestion} from "@/scripts/rewriteStandaloneQuestion";
-import {searchSupabaseVectors} from "@/scripts/searchSupabaseVectors";
 import {buildSystemTemplate} from "@/scripts/buildSystemTemplate";
+import {functions} from "@/scripts/createFunctionDefinitions";
+import {handleServerFunctions} from "@/scripts/handleServerFunctions";
+import {createSupabaseClient} from "@/scripts/createSupabaseClient";
 
 type Data = {
     messages: ChatCompletionRequestMessage[],
+    conversationId: string,
 }
 
 export const config = {
@@ -21,43 +23,62 @@ const apiConfig = new Configuration({
 
 const openai = new OpenAIApi(apiConfig)
 
+const saveQueryToSupabase = async (conversationId: string, finalMessage?: string) => {
+    if (!finalMessage) return;
+    const supabaseClient = createSupabaseClient();
+    const { error } = await supabaseClient
+        .from('conversations')
+        .insert( { conversationId: conversationId, message: finalMessage } )
+
+    if (error) console.error('Error inserting conversation', error);
+}
+
 export default async function handler(
     req: NextRequest,
     res: NextApiResponse<Data>
 ) {
     if (req.method === 'POST') {
-        const { messages }: Data = await req.json();
-        let updatedMessages = [...messages];
-        const query = updatedMessages[updatedMessages.length - 1];
+        const { messages, conversationId }: Data = await req.json();
+        const systemTemplate = buildSystemTemplate();
 
-        if (!query) {
-            res.status(400).end();
-            return;
-        }
-
-        if (query.role === 'user') {
-            const messageHistory = messages.slice(0, messages.length - 1);
-            const standaloneQuestion = await rewriteStandaloneQuestion(updatedMessages);
-            const context = await searchSupabaseVectors(query.content);
-            const systemTemplate = buildSystemTemplate(context);
-
-            updatedMessages = [
-                { role: 'system', content: systemTemplate },
-                ...messageHistory,
-                { role: 'user', content: standaloneQuestion }
-            ];
-        }
+        const updatedMessages = [
+            { role: ChatCompletionRequestMessageRoleEnum.System, content: systemTemplate },
+            ...messages,
+        ];
 
         const response = await openai.createChatCompletion({
-            model: 'gpt-3.5-turbo-16k',
+            model: 'gpt-4',
             temperature: 0,
             messages: updatedMessages,
-            // function_call: 'auto',
-            // functions,
+            function_call: 'auto',
+            functions,
             stream: true,
         })
 
-        const stream = OpenAIStream(response);
+        const stream = OpenAIStream(response, {
+            onFinal: async (finalMessage) => {
+                await saveQueryToSupabase(conversationId, finalMessage);
+            },
+            onStart: () => {
+                saveQueryToSupabase(conversationId, updatedMessages[updatedMessages.length - 1].content)
+            },
+            experimental_onFunctionCall: async (functionCall, createFunctionCallMessages) => {
+                // @ts-ignore
+                const functionCallResult = await handleServerFunctions(functionCall, createFunctionCallMessages)
+                    .catch(err => {
+                        console.error('Error handling server function', err);
+                        return createFunctionCallMessages(`Error handling server function: ${err}`);
+                    });
+
+                return openai.createChatCompletion({
+                    model: 'gpt-4',
+                    temperature: 0.1,
+                    // @ts-ignore
+                    messages: [...updatedMessages, ...functionCallResult],
+                    stream: true,
+                })
+            }
+        });
 
         return new StreamingTextResponse(stream)
     } else {
