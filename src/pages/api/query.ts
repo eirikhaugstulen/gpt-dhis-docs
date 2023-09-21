@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type {NextApiResponse} from 'next'
 import {ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum, Configuration, OpenAIApi} from "openai-edge";
-import {OpenAIStream, StreamingTextResponse} from "ai";
+import {OpenAIStream, StreamingTextResponse, experimental_StreamData} from "ai";
 import {NextRequest} from "next/server";
 import {buildSystemTemplate} from "@/scripts/buildSystemTemplate";
 import {functions} from "@/scripts/createFunctionDefinitions";
@@ -38,7 +38,7 @@ export default async function handler(
     res: NextApiResponse<Data>
 ) {
     if (req.method === 'POST') {
-        const { messages, conversationId }: Data = await req.json();
+        const { messages }: Data = await req.json();
         const systemTemplate = buildSystemTemplate();
 
         const updatedMessages = [
@@ -55,16 +55,12 @@ export default async function handler(
             stream: true,
         })
 
+        const streamData = new experimental_StreamData();
+
         const stream = OpenAIStream(response, {
-            onFinal: async (finalMessage) => {
-                await saveQueryToSupabase(conversationId, finalMessage);
-            },
-            onStart: () => {
-                saveQueryToSupabase(conversationId, updatedMessages[updatedMessages.length - 1].content)
-            },
             experimental_onFunctionCall: async (functionCall, createFunctionCallMessages) => {
                 // @ts-ignore
-                const functionCallResult = await handleServerFunctions(functionCall, createFunctionCallMessages)
+                const functionCallResult = await handleServerFunctions(functionCall, createFunctionCallMessages, streamData)
                     .catch(err => {
                         console.error('Error handling server function', err);
                         return createFunctionCallMessages(`Error handling server function: ${err}`);
@@ -77,10 +73,14 @@ export default async function handler(
                     messages: [...updatedMessages, ...functionCallResult],
                     stream: true,
                 })
+            },
+            experimental_streamData: true,
+            onFinal: () => {
+                streamData.close();
             }
         });
 
-        return new StreamingTextResponse(stream)
+        return new StreamingTextResponse(stream, {}, streamData)
     } else {
         res.status(405).end();
     }

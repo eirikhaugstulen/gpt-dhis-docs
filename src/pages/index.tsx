@@ -1,14 +1,15 @@
-import Head from 'next/head'
-import {useEffect, useMemo, useRef, useState} from "react";
-import {MessagePresets} from "@/components/Common/MessagePresets";
-import {AnimatePresence} from "framer-motion";
-import {TopBar} from "@/components/Common/TopBar";
-import {ChatForm} from "@/components/Common/Form";
-import {ChatMessages} from "@/components/Common/ChatMessages";
-import {ResetButton} from "@/components/UI/ResetButton";
-import {useChat} from "ai/react";
-import {MessageTypes} from "@/components/UI/Chat/ChatBubble/ChatBubble.types";
-import {generateId} from "@/utils/generateId";
+import { ChatMessages } from "@/components/Common/ChatMessages";
+import { ChatForm } from "@/components/Common/Form";
+import { GraphDataDisplay } from '@/components/Common/GraphDataDisplay';
+import { MessagePresets } from "@/components/Common/MessagePresets";
+import { TopBar } from "@/components/Common/TopBar";
+import { MessageTypes } from "@/components/UI/Chat/ChatBubble/ChatBubble.types";
+import { ResetButton } from "@/components/UI/ResetButton";
+import { generateId } from "@/utils/generateId";
+import { useChat } from "ai/react";
+import { AnimatePresence } from "framer-motion";
+import Head from 'next/head';
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export default function Home() {
     const [showPresets, setShowPresets] = useState(true);
@@ -22,11 +23,9 @@ export default function Home() {
         setInput,
         setMessages,
         isLoading,
+        data,
     } = useChat({
         api: '/api/query',
-        body: {
-            conversationId: conversationIdRef.current,
-        }
     })
 
     const choosePreset = async (query: string) => {
@@ -58,51 +57,61 @@ export default function Home() {
         <>
             <Head>
                 <title>GPT - DHIS2 Docs</title>
-                <meta name="title" content="DHIS2 Documentation Chatbot"/>
-                <meta name="description" content="Interact with DHIS2 Documentation in a simpler, more intuitive way through our chatbot"/>
-                <meta property="og:type" content="website"/>
-                <meta property="og:title" content="DHIS2 Documentation Chatbot"/>
-                <meta property="og:description" content="Interact with DHIS2 Documentation in a simpler, more intuitive way through our chatbot"/>
+                <meta name="title" content="DHIS2 Documentation Chatbot" />
+                <meta name="description" content="Interact with DHIS2 Documentation in a simpler, more intuitive way through our chatbot" />
+                <meta property="og:type" content="website" />
+                <meta property="og:title" content="DHIS2 Documentation Chatbot" />
+                <meta property="og:description" content="Interact with DHIS2 Documentation in a simpler, more intuitive way through our chatbot" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            <div>
-                <TopBar />
+            <div className='bg-white'>
+                <TopBar title={'AI Analytics'} />
 
-                <div className={"relative mt-16 transition-all rounded-lg mx-auto mb-28 shadow-2xl max-w-4xl z-10"}>
-                    <div className="transform overflow-hidden flex flex-col gap-5 px-6 py-10 rounded bg-white ">
-                        <div className={'flex justify-end'}>
-                            {!showPresets && (
-                                <div>
-                                    <ResetButton onClick={resetChat} />
-                                </div>
-                            )}
-                        </div>
+                <div className={'flex'}>
+                    <div className={"relative transition-all overflow-scroll w-1/3 z-10 border-r"}>
+                        <div className="transform h-screen flex flex-col justify-between gap-5 px-6 pb-10 pt-24 rounded bg-white ">
+                            <div className={'flex justify-end text-black'}>
+                                {!showPresets && (
+                                    <div>
+                                        <ResetButton onClick={resetChat} />
+                                    </div>
+                                )}
+                            </div>
 
-                        <div className={'max-w-3xl w-full mx-auto'}>
-                            <ChatMessages
-                                messages={messages}
-                                isQuerying={isQuerying}
+                            <div className={'max-w-3xl flex-grow w-full mx-auto'}>
+                                <ChatMessages
+                                    messages={messages}
+                                    isQuerying={isQuerying}
+                                />
+                            </div>
+
+
+                            <div className={'w-full max-w-2xl mx-auto'}>
+                                <AnimatePresence>
+                                    {showPresets && (
+                                        <MessagePresets
+                                            setQuery={choosePreset}
+                                        />
+                                    )}
+                                </AnimatePresence>
+                            </div>
+
+                            <ChatForm
+                                handleMessageSubmit={handleSubmit}
+                                onFieldChange={handleInputChange}
+                                value={input}
+                                submitRef={submitRef}
                             />
                         </div>
+                    </div>
 
-
-                        <div className={'w-full max-w-2xl mx-auto'}>
-                            <AnimatePresence>
-                                {showPresets && (
-                                    <MessagePresets
-                                        setQuery={choosePreset}
-                                    />
-                                )}
-                            </AnimatePresence>
+                    <div className='flex w-2/3  bg-gray-50 px-24 h-screen'>
+                        <div className='bg-white shadow-lg rounded mb-12 overflow-y-scroll overflow-x-hidden mt-24 p-10 text-center w-full'>
+                            <GraphDataDisplay
+                                graphData={data}
+                            />
                         </div>
-
-                        <ChatForm
-                            handleMessageSubmit={handleSubmit}
-                            onFieldChange={handleInputChange}
-                            value={input}
-                            submitRef={submitRef}
-                        />
                     </div>
                 </div>
             </div>

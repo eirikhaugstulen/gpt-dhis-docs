@@ -21,7 +21,7 @@ export const Pill = ({ text, onClick = () => {} }: Props) => (
         variants={listItemVariant}
         transition={{ duration: 0.2 }}
         onClick={() => onClick(text)}
-        className={'bg-slate-100 px-2 py-1 cursor-pointer text-sm rounded text-gray-600 ring-1 ring-gray-300 hover:bg-slate-200'}
+        className={'bg-slate-100 px-2 text-left py-1 cursor-pointer text-sm rounded text-gray-600 ring-1 ring-gray-300 hover:bg-slate-200'}
     >
             {text}
     </motion.button>
