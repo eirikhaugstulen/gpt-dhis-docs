@@ -7,7 +7,7 @@ export const fetchAnalyticsData = async (functionArgs: unknown, streamData: any)
 
     const headers = { Authorization: `Basic YWRtaW46ZGlzdHJpY3Q=`};
     // @ts-ignore
-    const response = await fetch(`https://debug.dhis2.org/2.40dev/api/40/analytics?dimension=dx:${indicatorIds.join(';')},pe:LAST_3_MONTHS&filter=ou:${organisationUnitIds.join(';')}&displayProperty=SHORTNAME&includeNumDen=false`, {
+    const response = await fetch(`https://debug.dhis2.org/2.40dev/api/40/analytics?dimension=ou:${organisationUnitIds.join(';')},dx:${indicatorIds.join(';')},pe:LAST_3_MONTHS&displayProperty=SHORTNAME&includeNumDen=false`, {
         headers,
     })
         .then(res => res.json())
