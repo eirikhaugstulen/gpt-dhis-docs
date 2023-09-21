@@ -14,7 +14,6 @@ export const GraphDataDisplay = ({ graphData }: Props) => {
     const [dialogOpen, setDialogOpen] = useState(false)
     const {
         complete,
-        isLoading,
         completion,
     } = useCompletion({
         api: '/api/format-data',

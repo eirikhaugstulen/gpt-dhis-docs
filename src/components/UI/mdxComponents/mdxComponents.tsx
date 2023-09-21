@@ -15,6 +15,6 @@ export const mdxComponents: Components = {
     tbody: ({children}) => <tbody className={'bg-white'}>{children}</tbody>,
     tr: ({children}) => <tr className={'border'}>{children}</tr>,
     th: ({children}) => <th className={'border p-2'}>{children}</th>,
-    td: ({children}) => <td className={'border p-2'}>{children}</td>,
+    td: ({children}) => <td className={'border p-2 text-left'}>{children}</td>,
     a: ({ children, href }) => <a href={href} className={'text-sky-600 hover:underline'}>{children}</a>,
 }

@@ -21,7 +21,7 @@ export const ChatBubble = ({ message }: Props) => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
         >
-            <div className={isChatbot ? '-order-1' : 'order-1'}>
+            <div className={isChatbot ? '-order-1 flex-shrink-0' : 'order-1 flex-shrink-0'}>
                 <div className={`flex p-0.5 justify-center items-center rounded-full drop-shadow ${isChatbot ? 'bg-white' : 'bg-slate-50 w-6 h-6'}`}>
                     {isChatbot ? (
                         <Image

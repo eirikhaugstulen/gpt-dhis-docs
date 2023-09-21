@@ -1,23 +1,32 @@
 import { ChatCompletionFunctions } from "openai-edge";
 
 export const OpenAiFunctionNames = Object.freeze({
-    GET_QUERY_SOURCES: 'get_query_sources',
-    SAVE_UNANSWERED_QUESTION: 'save_unanswered_question',
+    FETCH_ANALYTICS_DATA: 'fetch_analytics_data',
 })
 
 export const functions: ChatCompletionFunctions[] = [
     {
-        name: OpenAiFunctionNames.GET_QUERY_SOURCES,
-        description: 'Run this function to get the sources for a query',
+        name: OpenAiFunctionNames.FETCH_ANALYTICS_DATA,
+        description: 'Run this function to fetch data from the analytics endpoints',
         parameters: {
             type: 'object',
             properties: {
-                query: {
-                    type: 'string',
-                    description: 'The question asked by the user rewritten as a standalone query',
-                }
+                organisationUnitIds: {
+                    type: 'array',
+                    description: 'The ids of the organisation units to fetch data for',
+                    items: {
+                        type: 'string',
+                    },
+                },
+                indicatorIds: {
+                    type: 'array',
+                    description: 'The indicatorIds to fetch data for',
+                    items: {
+                        type: 'string',
+                    }
+                },
             },
-            required: ['query']
+            required: ['organisationUnitIds', 'indicatorIds']
         }
     }
 ]

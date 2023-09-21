@@ -14,7 +14,7 @@ export const ChatMessages = ({ messages, isQuerying }: Props) => {
     return (
         <AnimatePresence>
             {messages && (
-                <motion.div>
+                <motion.div className={'flex flex-col gap-3'}>
                     <ChatBubble
                         message={{
                             id: 'initial-message',

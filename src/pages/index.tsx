@@ -66,7 +66,7 @@ export default function Home() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <div className='bg-white'>
-                <TopBar />
+                <TopBar title={'AI Analytics'} />
 
                 <div className={'flex'}>
                     <div className={"relative transition-all overflow-scroll w-1/3 z-10 border-r"}>

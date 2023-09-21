@@ -14,7 +14,7 @@ export const TopBar = ({
 
     return (
         <>
-            <div className={'w-full sticky top-0 z-50 bg-white flex items-center justify-between align-center px-10 py-4 border-b'}>
+            <div className={'w-full absolute top-0 z-50 bg-white flex items-center justify-between align-center px-10 py-4 border-b'}>
                 <div className={'flex items-center'}>
                     <Image
                         src={'/dhis2-logo.svg'}
