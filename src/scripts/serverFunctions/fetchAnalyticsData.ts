@@ -21,6 +21,6 @@ export const fetchAnalyticsData = async (functionArgs: unknown, streamData: any)
     })
 
     return {
-        followUpInstructions: 'You have successfully fetched the analytics data. Provide an helpful answer to the user and ask a follow up question to continue the conversation. Do not try to display any data in this output',
+        followUpInstructions: 'You have successfully fetched the analytics data. Provide an helpful answer to the user and ask a follow up question to continue the conversation. Do not display any data or summary of the data in this output',
     }
 }

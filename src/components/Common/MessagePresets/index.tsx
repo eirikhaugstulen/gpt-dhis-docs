@@ -38,7 +38,7 @@ export const MessagePresets = ({ setQuery }: Props) => {
                 exit={'hidden'}
                 className={'flex flex-wrap mt-2 gap-2'}
             >
-                <Pill onClick={setQuery} text={'Can you give me some data for Sierra Leone?'} />
+                <Pill onClick={setQuery} text={'Show me the weight for height over 80 in Bo'} />
                 <Pill onClick={setQuery} text={'Show me the ANC data for Port Loko and Western Area'} />
                 <Pill onClick={setQuery} text={'Can you give me the OPV coverage for Bo, Bombali, Kenema and Kono?'} />
             </motion.ul>

@@ -1,6 +1,11 @@
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/UI/command";
 import { mdxComponents } from "@/components/UI/mdxComponents/mdxComponents";
-import { ChartBarIcon, PaintBrushIcon, TableCellsIcon } from "@heroicons/react/24/outline"
+import {
+    ChartBarIcon,
+    PaintBrushIcon,
+    PencilSquareIcon,
+    TableCellsIcon
+} from "@heroicons/react/24/outline"
 import { useCompletion } from "ai/react";
 import { useState } from "react";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
@@ -22,7 +27,9 @@ export const GraphDataDisplay = ({ graphData }: Props) => {
         }
     })
 
-    if (!graphData) return null;
+    if (!graphData) {
+        return null
+    }
 
     const onSelectCommand = (command: string) => {
         complete(command)
@@ -76,6 +83,10 @@ export const GraphDataDisplay = ({ graphData }: Props) => {
                         <CommandItem onSelect={onSelectCommand}>
                             <ChartBarIcon className="mr-2 h-4 w-4" />
                             <span>Format as a bar chart</span>
+                        </CommandItem>
+                        <CommandItem onSelect={onSelectCommand}>
+                            <PencilSquareIcon className={'mr-2 h-4 w-4'} />
+                            <span>Write a text report that highlights some key insights and actionable points</span>
                         </CommandItem>
                     </CommandGroup>
                 </CommandList>
